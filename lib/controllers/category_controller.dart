@@ -49,19 +49,23 @@ class CategoryController extends GetxController {
     });
   }
 
+  void showSnack(BuildContext context, String title, String message) {
+    Get.snackbar(
+      title,
+      message,
+      duration: Duration(milliseconds: 2500),
+      messageText: Text(message),
+      boxShadows: [BoxShadow(offset: Offset(0, 2), blurRadius: 2.2, color: Colors.black.withOpacity(0.24))],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      margin: EdgeInsets.symmetric(vertical: 28, horizontal: 20),
+      animationDuration: Duration(milliseconds: 150),
+    );
+  }
+
   void createCategory(BuildContext context) async {
-    if (this.newCategoryName.text.isEmpty) {
-      Get.snackbar(
-        "Erro",
-        "Preencha todos os campos!",
-        duration: Duration(milliseconds: 2000),
-        messageText: Text("Preencha todos os campos!"),
-        boxShadows: [BoxShadow(offset: Offset(0, 2), blurRadius: 2.2, color: Colors.black.withOpacity(0.24))],
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        margin: EdgeInsets.symmetric(vertical: 28, horizontal: 20),
-        animationDuration: Duration(milliseconds: 150),
-      );
-    } else {
+    if (this.newCategoryName.text.isEmpty)
+      this.showSnack(context, "Erro", "Preencha todos os campos!");
+    else {
       String color =
           this.newCategoryColor.value.toString().replaceFirst('MaterialColor(primary value: Color(0xff', '').replaceAll(')', '');
       var userInfo = await session.getUserInfo();

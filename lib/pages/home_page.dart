@@ -197,8 +197,10 @@ class Debits extends StatelessWidget {
                             Padding(
                               padding: EdgeInsets.only(bottom: 20, left: 20, right: 20, top: 45),
                               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
-                                Text(
-                                    'Orçamento mensal (${ctx.totalDebits.value.toStringAsFixed(2)}/${ctx.limit.value.toStringAsFixed(2)})'),
+                                ctx.totalDebits.value != null && ctx.limit.value != null
+                                    ? Text(
+                                        'Orçamento mensal (${ctx.totalDebits.value.toStringAsFixed(2)}/${ctx.limit.value.toStringAsFixed(2)})')
+                                    : Container(),
                                 SizedBox(height: 7),
                                 LinearPercentIndicator(
                                   animation: true,
@@ -307,7 +309,7 @@ class Categories extends StatelessWidget {
             },
           ),
         ),
-        SizedBox(height: 50),
+        SizedBox(height: 30),
       ]),
     );
   }

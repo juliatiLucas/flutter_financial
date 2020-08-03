@@ -49,41 +49,60 @@ class DebitController extends GetxController {
     });
   }
 
-  bool checkLimit() => double.parse(this.value.text) + _homeController.totalDebits.value > _homeController.limit.value;
+  bool checkLimit() {
+    print(this.value.text);
+    return double.parse(this.value.text) + _homeController.totalDebits.value < _homeController.limit.value;
+  }
 
-  Future<bool> createDebit(BuildContext context) async {
-    bool result = false;
+  void showSnack(BuildContext context, String title, String message) {
+    Get.snackbar(
+      title,
+      message,
+      duration: Duration(milliseconds: 2500),
+      messageText: Text(message),
+      boxShadows: [BoxShadow(offset: Offset(0, 2), blurRadius: 2.2, color: Colors.black.withOpacity(0.24))],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      margin: EdgeInsets.symmetric(vertical: 28, horizontal: 20),
+      animationDuration: Duration(milliseconds: 150),
+    );
+  }
+
+  Future<void> createDebit(BuildContext context) async {
+    bool error = false;
+    String title;
+    String message;
     var userInfo = await session.getUserInfo();
     if (description.text.isEmpty || value.text.isEmpty || selectedCategory.value == null) {
-      Get.snackbar(
-        "Erro",
-        "Preencha todos os campos!",
-        duration: Duration(milliseconds: 2000),
-        messageText: Text("Preencha todos os campos!"),
-        boxShadows: [BoxShadow(offset: Offset(0, 2), blurRadius: 2.2, color: Colors.black.withOpacity(0.24))],
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        margin: EdgeInsets.symmetric(vertical: 28, horizontal: 20),
-        animationDuration: Duration(milliseconds: 150),
-      );
+      print('if 1');
+      error = true;
+      title = "Erro";
+      message = "Preencha todos os campos!";
+    } else if (!this.checkLimit()) {
+      print('if 2');
+      error = true;
+      title = "Erro";
+      message = "Limite insuficiente!";
+    } else {
+      Map<String, String> data = {
+        "description": description.text,
+        "value": value.text,
+        "user": userInfo['id'].toString(),
+        "category": selectedCategory.value.id.toString(),
+      };
+
+      await http.post("${Config.api}/debits", body: json.encode(data), headers: {"Content-Type": "application/json"}).then((res) {
+        if (res.statusCode == 201) {
+          this.description.text = "";
+          this.value.text = "";
+          this.setCategory(null);
+        }
+        _homeController.getDebits();
+      });
     }
 
-    Map<String, String> data = {
-      "description": description.text,
-      "value": value.text,
-      "user": userInfo['id'].toString(),
-      "category": selectedCategory.value.id.toString(),
-    };
-
-    await http.post("${Config.api}/debits", body: json.encode(data), headers: {"Content-Type": "application/json"}).then((res) {
-      print(res.statusCode);
-      if (res.statusCode == 201) {
-        this.description.text = "";
-        this.value.text = "";
-        this.setCategory(null);
-        result = true;
-      }
-      _homeController.getDebits();
-    });
-    return result;
+    if (error) {
+      this.showSnack(context, title, message);
+    }
+    await Future.delayed(Duration(milliseconds: 2000), () {});
   }
 }
