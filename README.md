@@ -1,6 +1,6 @@
-# fl_financial
+# Flutter Financial
 
-A new Flutter project.
+A finance controll Flutter App
 
 ## Getting Started
 

@@ -17,43 +17,33 @@ class CategoryTile extends StatelessWidget {
               elevation: 0,
               contentPadding: EdgeInsets.zero,
               content: Container(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                decoration: BoxDecoration(
-                    color: Theme.of(context).dialogBackgroundColor, borderRadius: BorderRadius.all(Radius.circular(10))),
-                height: MediaQuery.of(context).size.height * 0.45,
-                width: 400,
-                child: GetBuilder<CategoryController>(
-                    init: Get.put(CategoryController()),
-                    initState: (_) {
-                      CategoryController.to.getDebitsByCategory(category.id);
-                    },
-                    builder: (ctx) {
-                      return ctx.debits.value != null
-                          ? Column(
-                              children: <Widget>[
-                                Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 10),
-                                    child: Opacity(
-                                      opacity: 0.82,
-                                      child: Text(
-                                        category.name,
-                                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                                      ),
-                                    )),
-                                Expanded(
-                                    child: ListView.builder(
-                                  physics: BouncingScrollPhysics(),
-                                  itemCount: ctx.debits.value.length,
-                                  itemBuilder: (_, index) {
-                                    Debit debit = ctx.debits.value[index];
-                                    return DebitTile(debit: debit);
-                                  },
-                                )),
-                              ],
-                            )
-                          : Center(child: Container(height: 40, width: 40, child: CircularProgressIndicator()));
-                    }),
-              ),
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).dialogBackgroundColor, borderRadius: BorderRadius.all(Radius.circular(10))),
+                  height: MediaQuery.of(context).size.height * 0.45,
+                  width: 400,
+                  child: Column(
+                    children: <Widget>[
+                      Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: Opacity(
+                            opacity: 0.82,
+                            child: Text(
+                              category.name,
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                          )),
+                      Expanded(
+                          child: ListView.builder(
+                        physics: BouncingScrollPhysics(),
+                        itemCount: category.debits.length,
+                        itemBuilder: (_, index) {
+                          Debit debit = category.debits[index];
+                          return DebitTile(debit: debit, categoryName: category.name);
+                        },
+                      )),
+                    ],
+                  )),
             ));
   }
 

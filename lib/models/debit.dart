@@ -1,4 +1,5 @@
 import './category.dart';
+import 'package:intl/intl.dart';
 
 class Debit {
   int id;
@@ -11,7 +12,7 @@ class Debit {
     id = json['id'];
     description = json['description'];
     value = double.parse(json['value']);
-    createdAt = json['created_at'];
+    createdAt = DateFormat('dd/MM HH:mm').format(DateTime.parse(json['created_at']).subtract(Duration(hours: 3)));
     category = json['category'] != null ? Category.fromJson(json['category']) : null;
   }
 }

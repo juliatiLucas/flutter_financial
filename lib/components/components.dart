@@ -1,31 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../models/debit.dart';
+import '../controllers/debit_controller.dart';
 
 class DebitTile extends StatelessWidget {
   final Debit debit;
-  DebitTile({this.debit});
+  final String categoryName;
+  final DebitController _debitController = Get.put(DebitController());
+  DebitTile({this.debit, this.categoryName = ""});
+
+  void delete(BuildContext context) async {
+    await _debitController.delete(context, debit.id);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Theme.of(context).secondaryHeaderColor))),
-        margin: EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 14, horizontal: 15),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
-            debit.category != null
-                ? Padding(
-                    padding: EdgeInsets.only(bottom: 7),
-                    child: Text(
-                      debit.category.name,
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    return ExpansionTile(
+      backgroundColor: Colors.black.withOpacity(0.03),
+      title: Text(debit.description),
+      subtitle: Text("-${debit.value.toString()}"),
+      children: <Widget>[
+        Container(
+          padding: EdgeInsets.only(top: 15, left: 16, right: 16, bottom: 8.5),
+          child: Opacity(
+              opacity: 0.8,
+              child: Material(
+                color: Colors.transparent,
+                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
+                  Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 7),
+                      child: Text(
+                        categoryName.length == 0 ? "Categoria: ${debit.category.name}" : "Categoria: $categoryName",
+                      ),
                     ),
-                  )
-                : Container(),
-            Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[Text(debit.description), Text("-${debit.value.toString()}")])
-          ]),
-        ));
+                    Text(debit.createdAt)
+                  ]),
+                  Row(children: [
+                    IconButton(
+                      icon: Icon(Icons.edit),
+                      onPressed: () {},
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () => this.delete(context),
+                    ),
+                  ])
+                ]),
+              )),
+        ),
+      ],
+    );
   }
 }
 

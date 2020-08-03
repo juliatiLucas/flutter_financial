@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import '../models/debit.dart';
 import '../models/category.dart';
 import '../utils/config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/session.dart';
 
 class HomeController extends GetxController {
@@ -11,14 +12,8 @@ class HomeController extends GetxController {
   final Session session = Session();
   Rx<double> limit = Rx<double>();
   Rx<double> totalDebits = Rx<double>();
-  Rx<bool> expanded = Rx<bool>(false);
   Rx<int> screen = Rx<int>(0);
   Rx<List<Debit>> debits = Rx<List<Debit>>();
-
-  void toggleExpanded(bool value) {
-    expanded.value = value != null ? value : !expanded.value;
-    update();
-  }
 
   void setScreen(int index) {
     screen.value = index;

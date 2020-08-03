@@ -14,7 +14,7 @@ class SignIn extends StatelessWidget {
       } else if (res) {
         Get.snackbar("Erro", "E-mail ou senha incorretos!",
             boxShadows: [BoxShadow(offset: Offset(0, 2), blurRadius: 2.2, color: Colors.black.withOpacity(0.24))],
-            backgroundColor: Colors.white,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             margin: EdgeInsets.symmetric(vertical: 28, horizontal: 20),
             animationDuration: Duration(milliseconds: 150),
             snackPosition: SnackPosition.BOTTOM);

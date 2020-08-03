@@ -7,6 +7,12 @@ import '../models/category.dart';
 class NewDebit extends StatelessWidget {
   final DebitController _debitController = Get.put(DebitController());
 
+  void createDebit(BuildContext context) {
+    _debitController.createDebit(context).then((res) {
+      Navigator.pop(context);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -14,7 +20,7 @@ class NewDebit extends StatelessWidget {
       child: Container(
         height: 390,
         decoration: BoxDecoration(
-            color: Theme.of(context).dialogBackgroundColor,
+            color: Theme.of(context).scaffoldBackgroundColor,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
@@ -75,7 +81,7 @@ class NewDebit extends StatelessWidget {
                       color: Colors.blue,
                       padding: EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
-                      onPressed: ctx.createDebit,
+                      onPressed: () => this.createDebit(context),
                       child: Text(
                         'CRIAR',
                         style: TextStyle(color: Colors.white, fontSize: 16),

@@ -1,14 +1,17 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import '../models/category.dart';
 import '../utils/session.dart';
 import '../utils/config.dart';
+import './home_controller.dart';
 
 class DebitController extends GetxController {
   static DebitController get to => Get.find();
   final Session session = Session();
+  final HomeController _homeController = Get.put(HomeController());
   TextEditingController description = TextEditingController();
   TextEditingController value = TextEditingController();
   Rx<List<Category>> categories = Rx<List<Category>>();
@@ -39,10 +42,27 @@ class DebitController extends GetxController {
     });
   }
 
-  Future<bool> createDebit() async {
+  Future<void> delete(BuildContext context, int debitId) async {
+    await http.delete("${Config.api}/debits/$debitId/").then((res) {
+      _homeController.getDebits();
+    });
+  }
+
+  Future<bool> createDebit(BuildContext context) async {
     bool result = false;
     var userInfo = await session.getUserInfo();
-    if (description.text.isEmpty || value.text.isEmpty) return result;
+    if (description.text.isEmpty || value.text.isEmpty || selectedCategory.value == null) {
+      Get.snackbar(
+        "Erro",
+        "Preencha todos os campos!",
+        duration: Duration(milliseconds: 2000),
+        messageText: Text("Preencha todos os campos!"),
+        boxShadows: [BoxShadow(offset: Offset(0, 2), blurRadius: 2.2, color: Colors.black.withOpacity(0.24))],
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        margin: EdgeInsets.symmetric(vertical: 28, horizontal: 20),
+        animationDuration: Duration(milliseconds: 150),
+      );
+    }
 
     Map<String, String> data = {
       "description": description.text,
@@ -52,7 +72,14 @@ class DebitController extends GetxController {
     };
 
     await http.post("${Config.api}/debits", body: json.encode(data), headers: {"Content-Type": "application/json"}).then((res) {
-      if (res.statusCode == 201) result = true;
+      print(res.statusCode);
+      if (res.statusCode == 201) {
+        this.description.text = "";
+        this.value.text = "";
+        this.setCategory(null);
+        result = true;
+      }
+      _homeController.getDebits();
     });
     return result;
   }
