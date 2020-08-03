@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import '../models/category.dart';
-import '../controllers/category_controller.dart';
+// import '../controllers/category_controller.dart';
 import './components.dart';
 import '../models/debit.dart';
 
 class CategoryTile extends StatelessWidget {
   final Category category;
   CategoryTile({this.category});
+
+  void onPopupSelect(BuildContext context, String value) {}
 
   void showDebits(BuildContext context) {
     showDialog(
@@ -27,21 +28,41 @@ class CategoryTile extends StatelessWidget {
                       Padding(
                           padding: EdgeInsets.symmetric(vertical: 10),
                           child: Opacity(
-                            opacity: 0.82,
-                            child: Text(
-                              category.name,
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                          )),
-                      Expanded(
-                          child: ListView.builder(
-                        physics: BouncingScrollPhysics(),
-                        itemCount: category.debits.length,
-                        itemBuilder: (_, index) {
-                          Debit debit = category.debits[index];
-                          return DebitTile(debit: debit, categoryName: category.name);
-                        },
-                      )),
+                              opacity: 0.82,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text(
+                                    category.name,
+                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                  ),
+                                  PopupMenuButton<String>(
+                                    onSelected: (value) => onPopupSelect(context, value),
+                                    icon: Icon(Icons.more_vert),
+                                    itemBuilder: (context) {
+                                      return ['Editar', 'Excluir']
+                                          .map((e) => PopupMenuItem<String>(child: Text(e), value: e))
+                                          .toList();
+                                    },
+                                  )
+                                ],
+                              ))),
+                      category.debits.length > 0
+                          ? Expanded(
+                              child: ListView.builder(
+                              physics: BouncingScrollPhysics(),
+                              itemCount: category.debits.length,
+                              itemBuilder: (_, index) {
+                                Debit debit = category.debits[index];
+                                return DebitTile(debit: debit, categoryName: category.name);
+                              },
+                            ))
+                          : Container(
+                              padding: EdgeInsets.only(top: 25),
+                              child: Opacity(
+                                opacity: 0.8,
+                                child: Text('Sem débitos nessa categoria.'),
+                              )),
                     ],
                   )),
             ));

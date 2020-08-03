@@ -7,11 +7,13 @@ import '../models/category.dart';
 import '../utils/session.dart';
 import '../utils/config.dart';
 import './home_controller.dart';
+import './category_controller.dart';
 
 class DebitController extends GetxController {
   static DebitController get to => Get.find();
   final Session session = Session();
   final HomeController _homeController = Get.put(HomeController());
+  final CategoryController _categoryController = Get.put(CategoryController());
   TextEditingController description = TextEditingController();
   TextEditingController value = TextEditingController();
   Rx<List<Category>> categories = Rx<List<Category>>();
@@ -32,9 +34,7 @@ class DebitController extends GetxController {
           categories.add(category);
         }
 
-        if (categories.length > 0) {
-          this.setCategory(categories[0]);
-        }
+        if (categories.length > 0) this.setCategory(categories[0]);
 
         this.categories.value = categories;
         update();
@@ -42,11 +42,14 @@ class DebitController extends GetxController {
     });
   }
 
-  Future<void> delete(BuildContext context, int debitId) async {
+  void delete(BuildContext context, int debitId) async {
     await http.delete("${Config.api}/debits/$debitId/").then((res) {
+      _categoryController.getCategories();
       _homeController.getDebits();
     });
   }
+
+  bool checkLimit() => double.parse(this.value.text) + _homeController.totalDebits.value > _homeController.limit.value;
 
   Future<bool> createDebit(BuildContext context) async {
     bool result = false;

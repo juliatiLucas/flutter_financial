@@ -1,16 +1,21 @@
 import 'dart:convert';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+import './home_controller.dart';
 import '../models/debit.dart';
 import '../models/category.dart';
-import 'package:http/http.dart' as http;
 import '../utils/config.dart';
 import '../utils/session.dart';
 
 class CategoryController extends GetxController {
   static CategoryController get to => Get.find();
   final Session session = Session();
+  final HomeController _homeController = Get.put(HomeController());
+  TextEditingController newCategoryName = TextEditingController();
   Rx<List<Debit>> debits = Rx<List<Debit>>();
   Rx<List<Category>> categories = Rx<List<Category>>();
+  Rx<Color> newCategoryColor = Rx<Color>(Colors.blue);
 
   void clearDebits() {
     this.debits.value = null;
@@ -19,6 +24,11 @@ class CategoryController extends GetxController {
 
   void clearCategories() {
     this.categories.value = null;
+    update();
+  }
+
+  void setNewCategoryColor(Color color) {
+    this.newCategoryColor.value = color;
     update();
   }
 
@@ -37,5 +47,41 @@ class CategoryController extends GetxController {
         update();
       }
     });
+  }
+
+  void createCategory(BuildContext context) async {
+    if (this.newCategoryName.text.isEmpty) {
+      Get.snackbar(
+        "Erro",
+        "Preencha todos os campos!",
+        duration: Duration(milliseconds: 2000),
+        messageText: Text("Preencha todos os campos!"),
+        boxShadows: [BoxShadow(offset: Offset(0, 2), blurRadius: 2.2, color: Colors.black.withOpacity(0.24))],
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        margin: EdgeInsets.symmetric(vertical: 28, horizontal: 20),
+        animationDuration: Duration(milliseconds: 150),
+      );
+    } else {
+      String color =
+          this.newCategoryColor.value.toString().replaceFirst('MaterialColor(primary value: Color(0xff', '').replaceAll(')', '');
+      var userInfo = await session.getUserInfo();
+      Map<String, String> data = {
+        "color": color,
+        "user": userInfo['id'].toString(),
+        "name": this.newCategoryName.text,
+      };
+
+      await http.post("${Config.api}/users/${userInfo['id']}/categories",
+          body: json.encode(data), headers: {"Content-Type": "application/json"}).then((res) {
+        print(res.body);
+        print(res.statusCode);
+        if (res.statusCode == 201) {
+          this.newCategoryName.text = "";
+          this.setNewCategoryColor(Colors.blue);
+          this.getCategories();
+          _homeController.getDebits();
+        }
+      });
+    }
   }
 }

@@ -63,6 +63,16 @@ class Wrapper extends StatelessWidget {
 class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+        body: Center(
+            child: Container(
+      height: 100,
+      width: 100,
+      child: Column(children: [
+        Icon(Icons.category, size: 48),
+        SizedBox(height: 15),
+        LinearProgressIndicator(),
+      ]),
+    )));
   }
 }

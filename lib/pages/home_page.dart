@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import '../controllers/home_controller.dart';
 import '../controllers/category_controller.dart';
 import '../models/debit.dart';
@@ -9,7 +10,8 @@ import '../components/components.dart';
 import '../components/category_tile.dart';
 import '../utils/session.dart';
 import '../utils/theme.dart';
-import './debit.dart';
+import './new_debit.dart';
+import './new_category.dart';
 import './signin.dart';
 
 class HomePage extends StatefulWidget {
@@ -183,12 +185,11 @@ class Debits extends StatelessWidget {
                                 SizedBox(height: 15),
                                 Text("Limite", style: TextStyle(color: Colors.white, fontSize: 22)),
                                 Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 10),
-                                  child: Text(
-                                          ctx.limit.value.toString(),
-                                          style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
-                                        )
-                                ),
+                                    padding: EdgeInsets.symmetric(vertical: 10),
+                                    child: Text(
+                                      ctx.limit.value.toString(),
+                                      style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
+                                    )),
                               ]),
                             ))),
                         Expanded(
@@ -247,6 +248,15 @@ class Debits extends StatelessWidget {
 }
 
 class Categories extends StatelessWidget {
+  void createCategory(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => NewCategory(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -267,7 +277,7 @@ class Categories extends StatelessWidget {
                 color: Colors.transparent,
                 child: IconButton(
                   icon: Icon(Icons.add),
-                  onPressed: () {},
+                  onPressed: () => this.createCategory(context),
                 ),
               ),
             )

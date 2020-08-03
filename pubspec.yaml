@@ -17,6 +17,7 @@ dependencies:
   percent_indicator: "^2.1.5"
   intl: ^0.16.1
   http: ^0.12.2
+  flutter_material_color_picker: ^1.0.5
   shared_preferences: ^0.5.8
 
 dev_dependencies:

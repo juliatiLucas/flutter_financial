@@ -2,9 +2,7 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import '../models/debit.dart';
-import '../models/category.dart';
 import '../utils/config.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/session.dart';
 
 class HomeController extends GetxController {
