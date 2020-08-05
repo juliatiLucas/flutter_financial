@@ -13,28 +13,8 @@ import './new_debit.dart';
 import './new_category.dart';
 import './signin.dart';
 
-class HomePage extends StatefulWidget {
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
+class HomePage extends StatelessWidget {
   final Session session = Session();
-  ScrollController _scrollController;
-
-  @override
-  void initState() {
-    _scrollController = ScrollController();
-    _scrollController.addListener(() {
-      if (_scrollController.offset >= _scrollController.position.maxScrollExtent && !_scrollController.position.outOfRange) {
-        print("teste");
-      }
-      if (_scrollController.offset <= _scrollController.position.minScrollExtent && !_scrollController.position.outOfRange) {
-        print("teste");
-      }
-    });
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,11 +38,10 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         body: SingleChildScrollView(
-            controller: _scrollController,
             child: Container(
-              height: MediaQuery.of(context).size.height,
-              child: Debits(),
-            )));
+          height: MediaQuery.of(context).size.height,
+          child: Debits(),
+        )));
   }
 }
 
@@ -76,14 +55,27 @@ class Debits extends StatelessWidget {
         this.limitModal(context);
         break;
       case 'Sair':
-        session.logout().then((value) {
-          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => SignIn()), (route) => false);
-        });
+        this.logout(context);
         break;
       case 'Tema':
         this.themeBottomModal(context);
         break;
     }
+  }
+
+  void logout(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (_) => AlertDialog(title: Text('Você tem certeza que deseja sair?'), actions: [
+              FlatButton(onPressed: () => Navigator.pop(context), child: Text('CANCELAR')),
+              FlatButton(
+                  onPressed: () => {
+                        session.logout().then((value) {
+                          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => SignIn()), (route) => false);
+                        })
+                      },
+                  child: Text('SIM')),
+            ]));
   }
 
   void limitModal(BuildContext context) {
@@ -92,6 +84,7 @@ class Debits extends StatelessWidget {
         builder: (_) => GetBuilder<HomeController>(builder: (ctx) {
               return AlertDialog(
                 contentPadding: EdgeInsets.zero,
+                elevation: 0,
                 backgroundColor: Colors.transparent,
                 content: Container(
                   width: MediaQuery.of(context).size.width * 0.7,
@@ -176,10 +169,14 @@ class Debits extends StatelessWidget {
   }
 
   double getPercentage() {
-    try {
-      return (((_homeController.totalDebits.value / _homeController.limit.value) * 100) / 100);
-    } catch (e) {
+    if (_homeController.totalDebits.value == 0 && _homeController.limit.value == 0)
       return 0;
+    else {
+      try {
+        return (((_homeController.totalDebits.value / _homeController.limit.value) * 100) / 100);
+      } catch (e) {
+        return 0;
+      }
     }
   }
 
@@ -208,7 +205,9 @@ class Debits extends StatelessWidget {
                   Container(
                     decoration: BoxDecoration(color: Theme.of(context).secondaryHeaderColor),
                     child: Container(
-                      height: MediaQuery.of(context).size.height + 250,
+                      height: ctx.debits.value.length > 0
+                          ? MediaQuery.of(context).size.height + 250
+                          : MediaQuery.of(context).size.height,
                       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: <Widget>[
                         Container(
                             height: 230,
@@ -263,32 +262,35 @@ class Debits extends StatelessWidget {
                                   backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                                   animationDuration: 900,
                                   percent: this.getPercentage(),
-                                  center: Text("${(this.getPercentage() * 100).toStringAsFixed(2)}%"),
+                                  center: Text("${(this.getPercentage() * 100).toStringAsFixed(2)}%",
+                                      style: TextStyle(color: Colors.white)),
                                   linearStrokeCap: LinearStrokeCap.roundAll,
                                   progressColor: Colors.teal[400],
                                 ),
                               ]),
                             ),
-                            Expanded(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    color: Theme.of(context).scaffoldBackgroundColor,
-                                    borderRadius: BorderRadius.all(Radius.circular(20))),
-                                child: NotificationListener<OverscrollIndicatorNotification>(
-                                  onNotification: (overscroll) {
-                                    overscroll.disallowGlow();
-                                    return true;
-                                  },
-                                  child: ListView.builder(
-                                      padding: EdgeInsets.symmetric(vertical: 15),
-                                      itemCount: ctx.debits.value.length,
-                                      itemBuilder: (_, index) {
-                                        Debit debit = ctx.debits.value[index];
-                                        return DebitTile(debit: debit);
-                                      }),
-                                ),
-                              ),
-                            ),
+                            ctx.debits.value.length > 0
+                                ? Expanded(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          color: Theme.of(context).scaffoldBackgroundColor,
+                                          borderRadius: BorderRadius.all(Radius.circular(20))),
+                                      child: NotificationListener<OverscrollIndicatorNotification>(
+                                        onNotification: (overscroll) {
+                                          overscroll.disallowGlow();
+                                          return true;
+                                        },
+                                        child: ListView.builder(
+                                            padding: EdgeInsets.symmetric(vertical: 15),
+                                            itemCount: ctx.debits.value.length,
+                                            itemBuilder: (_, index) {
+                                              Debit debit = ctx.debits.value[index];
+                                              return DebitTile(debit: debit);
+                                            }),
+                                      ),
+                                    ),
+                                  )
+                                : Container(),
                           ]),
                         ),
                         Categories(),
@@ -347,18 +349,20 @@ class Categories extends StatelessWidget {
           },
           builder: (ctx) {
             return ctx.categories.value != null
-                ? Container(
-                    height: 110,
-                    padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                    child: ListView.builder(
-                        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
-                        scrollDirection: Axis.horizontal,
-                        itemCount: ctx.categories.value.length,
-                        shrinkWrap: true,
-                        itemBuilder: (_, index) {
-                          Category category = ctx.categories.value[index];
-                          return CategoryTile(category: category);
-                        }))
+                ? ctx.categories.value.length > 0
+                    ? Container(
+                        height: 110,
+                        padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                        child: ListView.builder(
+                            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
+                            scrollDirection: Axis.horizontal,
+                            itemCount: ctx.categories.value.length,
+                            shrinkWrap: true,
+                            itemBuilder: (_, index) {
+                              Category category = ctx.categories.value[index];
+                              return CategoryTile(category: category);
+                            }))
+                    : Center(child: Text('Nenhuma categoria'))
                 : Container(padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4), child: LinearProgressIndicator());
           },
         ),

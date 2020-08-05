@@ -35,4 +35,5 @@ class SignInController extends GetxController {
     });
     return result;
   }
+
 }

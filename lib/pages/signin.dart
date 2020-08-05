@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/signin_controller.dart';
-import './home_page.dart';
 import '../components/components.dart';
+import './signup.dart';
+import './home_page.dart';
 
 class SignIn extends StatelessWidget {
   final SignInController _signInController = Get.put(SignInController());
@@ -56,7 +57,7 @@ class SignIn extends StatelessWidget {
                       padding: EdgeInsets.symmetric(vertical: 18, horizontal: 18),
                       width: MediaQuery.of(context).size.width,
                       decoration: BoxDecoration(
-                          color: Theme.of(context).dialogBackgroundColor,
+                          color: Theme.of(context).scaffoldBackgroundColor,
                           borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(40),
                             topRight: Radius.circular(40),
@@ -81,6 +82,16 @@ class SignIn extends StatelessWidget {
                                 controller: _signInController.password,
                                 hintText: "Senha",
                                 obscure: ctx.obscure.value,
+                                suffixIcon: Container(
+                                  margin: EdgeInsets.only(right: 10),
+                                  child: IconButton(
+                                    icon: Icon(Icons.remove_red_eye),
+                                    splashColor: Colors.transparent,
+                                    highlightColor: Colors.transparent,
+                                    onPressed: () => ctx.toggleObscure(),
+                                    color: ctx.obscure.value ? Colors.grey[600] : Colors.white,
+                                  ),
+                                ),
                               )),
                           Row(
                             children: <Widget>[
@@ -90,7 +101,7 @@ class SignIn extends StatelessWidget {
                                   padding: EdgeInsets.symmetric(vertical: 14, horizontal: 20),
                                   child: Text('Cadastrar',
                                       style: TextStyle(decoration: TextDecoration.underline, fontSize: 18, color: Colors.teal)),
-                                  onPressed: () {},
+                                  onPressed: () => Get.to(SignUp()),
                                 ),
                               )
                             ],
@@ -105,7 +116,7 @@ class SignIn extends StatelessWidget {
                     child: FloatingActionButton(
                       elevation: 0,
                       tooltip: "Entrar",
-                      child: Icon(Icons.arrow_forward),
+                      child: Icon(Icons.arrow_forward, color: Colors.white),
                       backgroundColor: this.validate() ? Colors.teal : Colors.grey,
                       onPressed: () => this.validate() ? this.signIn(context) : null,
                     ),

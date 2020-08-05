@@ -65,7 +65,7 @@ class CategoryController extends GetxController {
     );
   }
 
-  void createCategory(BuildContext context) async {
+  Future<void> createCategory(BuildContext context) async {
     if (this.newCategoryName.text.isEmpty)
       this.showSnack(context, "Erro", "Preencha todos os campos!");
     else {

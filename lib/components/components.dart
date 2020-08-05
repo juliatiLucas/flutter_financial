@@ -58,8 +58,9 @@ class MyInput extends StatelessWidget {
   final String hintText;
   final bool obscure;
   final TextInputType textInputType;
+  final Widget suffixIcon;
 
-  MyInput({this.controller, this.hintText, this.obscure = false, this.textInputType = TextInputType.text});
+  MyInput({this.controller, this.hintText, this.obscure = false, this.textInputType = TextInputType.text, this.suffixIcon });
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +69,7 @@ class MyInput extends StatelessWidget {
       obscureText: this.obscure,
       keyboardType: this.textInputType,
       decoration: InputDecoration(
+        suffixIcon: suffixIcon,
         hintText: this.hintText,
         fillColor: Theme.of(context).secondaryHeaderColor,
         filled: true,

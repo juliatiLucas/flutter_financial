@@ -10,6 +10,7 @@ class NewCategory extends StatelessWidget {
         context: context,
         builder: (_) => AlertDialog(
               backgroundColor: Colors.transparent,
+              elevation: 0,
               content: GetBuilder<CategoryController>(builder: (ctx) {
                 return Container(
                   decoration: BoxDecoration(
@@ -88,7 +89,11 @@ class NewCategory extends StatelessWidget {
                             color: Colors.blue,
                             padding: EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
-                            onPressed: () => ctx.createCategory(context),
+                            onPressed: () {
+                              ctx.createCategory(context).then((res) {
+                                Navigator.pop(context);
+                              });
+                            },
                             child: Text(
                               'CRIAR',
                               style: TextStyle(color: Colors.white, fontSize: 16),
