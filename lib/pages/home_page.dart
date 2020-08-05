@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
-import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import '../controllers/home_controller.dart';
 import '../controllers/category_controller.dart';
 import '../models/debit.dart';
@@ -73,6 +72,9 @@ class Debits extends StatelessWidget {
 
   onPopupSelect(BuildContext context, String value) {
     switch (value) {
+      case 'Definir Limite':
+        this.limitModal(context);
+        break;
       case 'Sair':
         session.logout().then((value) {
           Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => SignIn()), (route) => false);
@@ -82,6 +84,59 @@ class Debits extends StatelessWidget {
         this.themeBottomModal(context);
         break;
     }
+  }
+
+  void limitModal(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (_) => GetBuilder<HomeController>(builder: (ctx) {
+              return AlertDialog(
+                contentPadding: EdgeInsets.zero,
+                backgroundColor: Colors.transparent,
+                content: Container(
+                  width: MediaQuery.of(context).size.width * 0.7,
+                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).scaffoldBackgroundColor, borderRadius: BorderRadius.all(Radius.circular(10))),
+                  child: Container(
+                    height: 190,
+                    child: SingleChildScrollView(
+                      child: Column(children: [
+                        Padding(
+                            padding: EdgeInsets.only(bottom: 25),
+                            child: Text(
+                              'Novo limite',
+                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                            )),
+                        MyInput(
+                          hintText: "",
+                          controller: ctx.newLimit,
+                          textInputType: TextInputType.number,
+                        ),
+                        SizedBox(height: 30),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            FlatButton(
+                                child: Text('FECHAR'),
+                                onPressed: () {
+                                  ctx.setNewLimit("");
+                                  Navigator.pop(context);
+                                }),
+                            FlatButton(
+                              child: Text('CONCLUÍDO'),
+                              onPressed: () async {
+                                ctx.updateLimit(context);
+                              },
+                            ),
+                          ],
+                        )
+                      ]),
+                    ),
+                  ),
+                ),
+              );
+            }));
   }
 
   void themeBottomModal(BuildContext context) {
@@ -175,7 +230,7 @@ class Debits extends StatelessWidget {
                                       onSelected: (value) => onPopupSelect(context, value),
                                       icon: Icon(Icons.more_vert, color: Colors.white),
                                       itemBuilder: (context) {
-                                        return ['Tema', 'Sair']
+                                        return ['Definir Limite', 'Tema', 'Sair']
                                             .map((e) => PopupMenuItem<String>(child: Text(e), value: e))
                                             .toList();
                                       },
@@ -285,29 +340,27 @@ class Categories extends StatelessWidget {
             )
           ]),
         ),
-        Container(
-          height: 90,
-          padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-          child: GetBuilder<CategoryController>(
-            init: Get.put(CategoryController()),
-            initState: (_) {
-              CategoryController.to.getCategories();
-            },
-            builder: (ctx) {
-              return ctx.categories.value != null
-                  ? ListView.builder(
-                      padding: EdgeInsets.only(top: 18),
-                      scrollDirection: Axis.horizontal,
-                      physics: BouncingScrollPhysics(),
-                      itemCount: ctx.categories.value.length,
-                      shrinkWrap: true,
-                      itemBuilder: (_, index) {
-                        Category category = ctx.categories.value[index];
-                        return CategoryTile(category: category);
-                      })
-                  : SizedBox();
-            },
-          ),
+        GetBuilder<CategoryController>(
+          init: Get.put(CategoryController()),
+          initState: (_) {
+            CategoryController.to.getCategories();
+          },
+          builder: (ctx) {
+            return ctx.categories.value != null
+                ? Container(
+                    height: 110,
+                    padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                    child: ListView.builder(
+                        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: ctx.categories.value.length,
+                        shrinkWrap: true,
+                        itemBuilder: (_, index) {
+                          Category category = ctx.categories.value[index];
+                          return CategoryTile(category: category);
+                        }))
+                : Container(padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4), child: LinearProgressIndicator());
+          },
         ),
         SizedBox(height: 30),
       ]),

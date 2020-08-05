@@ -10,14 +10,13 @@ class DebitTile extends StatelessWidget {
   DebitTile({this.debit, this.categoryName = ""});
 
   void delete(BuildContext context) async {
-    await _debitController.delete(context, debit.id);
+    _debitController.delete(context, debit.id);
   }
 
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
-      backgroundColor: Colors.black.withOpacity(0.03),
-      title: Text(debit.description),
+      title: Text(debit.description, style: TextStyle(fontWeight: FontWeight.bold)),
       subtitle: Text("-${debit.value.toString()}"),
       children: <Widget>[
         Container(

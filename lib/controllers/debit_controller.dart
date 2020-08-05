@@ -50,7 +50,6 @@ class DebitController extends GetxController {
   }
 
   bool checkLimit() {
-    print(this.value.text);
     return double.parse(this.value.text) + _homeController.totalDebits.value < _homeController.limit.value;
   }
 
@@ -60,6 +59,8 @@ class DebitController extends GetxController {
       message,
       duration: Duration(milliseconds: 2500),
       messageText: Text(message),
+      isDismissible: true,
+      dismissDirection: SnackDismissDirection.HORIZONTAL,
       boxShadows: [BoxShadow(offset: Offset(0, 2), blurRadius: 2.2, color: Colors.black.withOpacity(0.24))],
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       margin: EdgeInsets.symmetric(vertical: 28, horizontal: 20),
@@ -73,12 +74,10 @@ class DebitController extends GetxController {
     String message;
     var userInfo = await session.getUserInfo();
     if (description.text.isEmpty || value.text.isEmpty || selectedCategory.value == null) {
-      print('if 1');
       error = true;
       title = "Erro";
       message = "Preencha todos os campos!";
     } else if (!this.checkLimit()) {
-      print('if 2');
       error = true;
       title = "Erro";
       message = "Limite insuficiente!";

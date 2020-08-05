@@ -10,12 +10,13 @@ import '../utils/session.dart';
 
 class CategoryController extends GetxController {
   static CategoryController get to => Get.find();
-  final Session session = Session();
+  final Session _session = Session();
   final HomeController _homeController = Get.put(HomeController());
   TextEditingController newCategoryName = TextEditingController();
+  TextEditingController categoryTileName = TextEditingController();
+  Rx<Color> newCategoryColor = Rx<Color>(Colors.blue);
   Rx<List<Debit>> debits = Rx<List<Debit>>();
   Rx<List<Category>> categories = Rx<List<Category>>();
-  Rx<Color> newCategoryColor = Rx<Color>(Colors.blue);
 
   void clearDebits() {
     this.debits.value = null;
@@ -33,7 +34,7 @@ class CategoryController extends GetxController {
   }
 
   void getCategories() async {
-    var userInfo = await session.getUserInfo();
+    var userInfo = await _session.getUserInfo();
     this.clearCategories();
     List<Category> categories = [];
     http.get("${Config.api}/users/${userInfo['id']}/categories").then((res) {
@@ -54,6 +55,8 @@ class CategoryController extends GetxController {
       title,
       message,
       duration: Duration(milliseconds: 2500),
+      isDismissible: true,
+      dismissDirection: SnackDismissDirection.HORIZONTAL,
       messageText: Text(message),
       boxShadows: [BoxShadow(offset: Offset(0, 2), blurRadius: 2.2, color: Colors.black.withOpacity(0.24))],
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -68,7 +71,7 @@ class CategoryController extends GetxController {
     else {
       String color =
           this.newCategoryColor.value.toString().replaceFirst('MaterialColor(primary value: Color(0xff', '').replaceAll(')', '');
-      var userInfo = await session.getUserInfo();
+      var userInfo = await _session.getUserInfo();
       Map<String, String> data = {
         "color": color,
         "user": userInfo['id'].toString(),
@@ -77,8 +80,6 @@ class CategoryController extends GetxController {
 
       await http.post("${Config.api}/users/${userInfo['id']}/categories",
           body: json.encode(data), headers: {"Content-Type": "application/json"}).then((res) {
-        print(res.body);
-        print(res.statusCode);
         if (res.statusCode == 201) {
           this.newCategoryName.text = "";
           this.setNewCategoryColor(Colors.blue);
@@ -87,5 +88,32 @@ class CategoryController extends GetxController {
         }
       });
     }
+  }
+
+  void setCategoryTileName(String name) => this.categoryTileName.text = name;
+
+  Future<void> deleteCategory(int categoryId) async {
+    var userInfo = await _session.getUserInfo();
+    await http.delete("${Config.api}/users/${userInfo['id']}/categories/$categoryId").then((res) {
+      if (res.statusCode == 200) {
+        this.categoryTileName.text = "";
+        this.getCategories();
+        _homeController.getDebits();
+      }
+    });
+  }
+
+  Future<void> changeCategoryName(int categoryId) async {
+    if (this.categoryTileName.text.isEmpty) return;
+    Map<String, String> data = {"name": this.categoryTileName.text};
+    var userInfo = await _session.getUserInfo();
+    await http.put("${Config.api}/users/${userInfo['id']}/categories/$categoryId",
+        body: json.encode(data), headers: {"Content-Type": "application/json"}).then((res) {
+      if (res.statusCode == 200) {
+        this.categoryTileName.text = "";
+        this.getCategories();
+        _homeController.getDebits();
+      }
+    });
   }
 }
