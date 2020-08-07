@@ -1,26 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/signin_controller.dart';
-import '../components/components.dart';
+import '../components/my_input.dart';
 import './signup.dart';
-import './home_page.dart';
 
 class SignIn extends StatelessWidget {
   final SignInController _signInController = Get.put(SignInController());
 
   void signIn(BuildContext context) {
-    _signInController.signIn().then((res) {
-      if (res) {
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => HomePage()), (route) => false);
-      } else if (res) {
-        Get.snackbar("Erro", "E-mail ou senha incorretos!",
-            boxShadows: [BoxShadow(offset: Offset(0, 2), blurRadius: 2.2, color: Colors.black.withOpacity(0.24))],
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            margin: EdgeInsets.symmetric(vertical: 28, horizontal: 20),
-            animationDuration: Duration(milliseconds: 150),
-            snackPosition: SnackPosition.BOTTOM);
-      }
-    });
+    _signInController.signIn(context);
   }
 
   bool validate() {
@@ -59,8 +47,8 @@ class SignIn extends StatelessWidget {
                       decoration: BoxDecoration(
                           color: Theme.of(context).scaffoldBackgroundColor,
                           borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(40),
-                            topRight: Radius.circular(40),
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
                           )),
                       child: Column(
                         children: <Widget>[
@@ -85,12 +73,11 @@ class SignIn extends StatelessWidget {
                                 suffixIcon: Container(
                                   margin: EdgeInsets.only(right: 10),
                                   child: IconButton(
-                                    icon: Icon(Icons.remove_red_eye),
-                                    splashColor: Colors.transparent,
-                                    highlightColor: Colors.transparent,
-                                    onPressed: () => ctx.toggleObscure(),
-                                    color: ctx.obscure.value ? Colors.grey[600] : Colors.white,
-                                  ),
+                                      icon: Icon(Icons.remove_red_eye),
+                                      splashColor: Colors.transparent,
+                                      highlightColor: Colors.transparent,
+                                      onPressed: () => ctx.toggleObscure(),
+                                      color: ctx.obscure.value ? Colors.grey[600] : Theme.of(context).textTheme.headline1.color),
                                 ),
                               )),
                           Row(

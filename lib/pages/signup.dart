@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../components/components.dart';
+import '../components/my_input.dart';
 import '../controllers/signup_controller.dart';
 
 class SignUp extends StatelessWidget {
@@ -54,7 +54,7 @@ class SignUp extends StatelessWidget {
                               splashColor: Colors.transparent,
                               highlightColor: Colors.transparent,
                               onPressed: () => ctx.toggleObscure(),
-                              color: ctx.obscure.value ? Colors.grey[600] : Colors.white,
+                              color: ctx.obscure.value ? Colors.grey[700] : Theme.of(context).textTheme.bodyText1.color,
                             ),
                           ),
                         )),

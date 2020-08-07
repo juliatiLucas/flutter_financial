@@ -35,28 +35,26 @@ class Wrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: FutureBuilder(
-          future: isAuthenticated(),
-          builder: (_, snapshot) {
-            Widget ret;
-            switch (snapshot.connectionState) {
-              case ConnectionState.active:
-                break;
-              case ConnectionState.none:
-                break;
-              case ConnectionState.waiting:
-                ret = SplashScreen();
-                break;
-              case ConnectionState.done:
-                ret = Container(
-                  child: snapshot.data ? HomePage() : SignIn(),
-                );
-                break;
-            }
-            return ret;
-          }),
-    );
+    return FutureBuilder(
+        future: isAuthenticated(),
+        builder: (_, snapshot) {
+          Widget ret;
+          switch (snapshot.connectionState) {
+            case ConnectionState.active:
+              break;
+            case ConnectionState.none:
+              break;
+            case ConnectionState.waiting:
+              ret = SplashScreen();
+              break;
+            case ConnectionState.done:
+              ret = Container(
+                child: snapshot.data ? HomePage() : SignIn(),
+              );
+              break;
+          }
+          return ret;
+        });
   }
 }
 

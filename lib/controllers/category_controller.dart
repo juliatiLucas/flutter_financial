@@ -7,6 +7,7 @@ import '../models/debit.dart';
 import '../models/category.dart';
 import '../utils/config.dart';
 import '../utils/session.dart';
+import '../components/snack.dart';
 
 class CategoryController extends GetxController {
   static CategoryController get to => Get.find();
@@ -16,10 +17,17 @@ class CategoryController extends GetxController {
   TextEditingController categoryTileName = TextEditingController();
   Rx<Color> newCategoryColor = Rx<Color>(Colors.blue);
   Rx<List<Debit>> debits = Rx<List<Debit>>();
+  Rx<Category> selectedCategory = Rx<Category>();
   Rx<List<Category>> categories = Rx<List<Category>>();
 
   void clearDebits() {
     this.debits.value = null;
+    update();
+  }
+
+  void selectCategory(Category category) {
+    this.selectedCategory.value = category;
+    this.setCategoryTileName(category.name);
     update();
   }
 
@@ -35,7 +43,7 @@ class CategoryController extends GetxController {
 
   void getCategories() async {
     var userInfo = await _session.getUserInfo();
-    this.clearCategories();
+
     List<Category> categories = [];
     http.get("${Config.api}/users/${userInfo['id']}/categories").then((res) {
       if (res.statusCode == 200) {
@@ -50,24 +58,9 @@ class CategoryController extends GetxController {
     });
   }
 
-  void showSnack(BuildContext context, String title, String message) {
-    Get.snackbar(
-      title,
-      message,
-      duration: Duration(milliseconds: 2500),
-      isDismissible: true,
-      dismissDirection: SnackDismissDirection.HORIZONTAL,
-      messageText: Text(message),
-      boxShadows: [BoxShadow(offset: Offset(0, 2), blurRadius: 2.2, color: Colors.black.withOpacity(0.24))],
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      margin: EdgeInsets.symmetric(vertical: 28, horizontal: 20),
-      animationDuration: Duration(milliseconds: 150),
-    );
-  }
-
   Future<void> createCategory(BuildContext context) async {
     if (this.newCategoryName.text.isEmpty)
-      this.showSnack(context, "Erro", "Preencha todos os campos!");
+      CustomSnack.showSnack(context, "Erro", "Preencha todos os campos!");
     else {
       String color =
           this.newCategoryColor.value.toString().replaceFirst('MaterialColor(primary value: Color(0xff', '').replaceAll(')', '');
@@ -78,7 +71,7 @@ class CategoryController extends GetxController {
         "name": this.newCategoryName.text,
       };
 
-      await http.post("${Config.api}/users/${userInfo['id']}/categories",
+      http.post("${Config.api}/users/${userInfo['id']}/categories",
           body: json.encode(data), headers: {"Content-Type": "application/json"}).then((res) {
         if (res.statusCode == 201) {
           this.newCategoryName.text = "";
@@ -88,6 +81,7 @@ class CategoryController extends GetxController {
         }
       });
     }
+    await Future.delayed(Duration(milliseconds: 2200), () {});
   }
 
   void setCategoryTileName(String name) => this.categoryTileName.text = name;

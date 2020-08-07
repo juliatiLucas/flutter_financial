@@ -8,7 +8,7 @@ import '../utils/session.dart';
 
 class HomeController extends GetxController {
   static HomeController get to => Get.find();
-  final Session session = Session();
+  final Session _session = Session();
   TextEditingController newLimit = TextEditingController();
   Rx<double> limit = Rx<double>();
   Rx<double> totalDebits = Rx<double>();
@@ -21,7 +21,7 @@ class HomeController extends GetxController {
   }
 
   void getLimit() async {
-    var userInfo = await session.getUserInfo();
+    var userInfo = await _session.getUserInfo();
     double limit = 0;
     await http.get("${Config.api}/users/${userInfo['id']}").then((res) {
       if (res.statusCode == 200) {
@@ -34,7 +34,7 @@ class HomeController extends GetxController {
   }
 
   void getDebits() async {
-    var userInfo = await session.getUserInfo();
+    var userInfo = await _session.getUserInfo();
     List<Debit> debits = [];
     http.get("${Config.api}/users/${userInfo['id']}/debits").then((res) {
       if (res.statusCode == 200) {
@@ -59,7 +59,7 @@ class HomeController extends GetxController {
         if (this.totalDebits.value > newLimit)
           showSnack(context, "Erro", "A soma total dos débitos é maior que o novo limite!");
         else {
-          var userInfo = await session.getUserInfo();
+          var userInfo = await _session.getUserInfo();
           Map<String, String> data = {"limit": newLimit.toString()};
 
           await http.put("${Config.api}/users/${userInfo['id']}",
@@ -77,17 +77,19 @@ class HomeController extends GetxController {
   void setNewLimit(String value) => this.newLimit.text = value;
 
   void showSnack(BuildContext context, String title, String message) {
-    Get.snackbar(
-      title,
-      message,
-      duration: Duration(milliseconds: 2700),
-      isDismissible: true,
-      dismissDirection: SnackDismissDirection.HORIZONTAL,
-      messageText: Text(message),
-      boxShadows: [BoxShadow(offset: Offset(0, 2), blurRadius: 2.2, color: Colors.black.withOpacity(0.24))],
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      margin: EdgeInsets.symmetric(vertical: 28, horizontal: 20),
-      animationDuration: Duration(milliseconds: 150),
-    );
+    if (!Get.isSnackbarOpen) {
+      Get.snackbar(
+        title,
+        message,
+        duration: Duration(milliseconds: 2700),
+        isDismissible: true,
+        dismissDirection: SnackDismissDirection.HORIZONTAL,
+        messageText: Text(message),
+        boxShadows: [BoxShadow(offset: Offset(0, 2), blurRadius: 2.2, color: Colors.black.withOpacity(0.24))],
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        margin: EdgeInsets.symmetric(vertical: 28, horizontal: 20),
+        animationDuration: Duration(milliseconds: 150),
+      );
+    }
   }
 }

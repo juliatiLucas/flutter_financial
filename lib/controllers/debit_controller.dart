@@ -8,10 +8,11 @@ import '../utils/session.dart';
 import '../utils/config.dart';
 import './home_controller.dart';
 import './category_controller.dart';
+import '../components/snack.dart';
 
 class DebitController extends GetxController {
   static DebitController get to => Get.find();
-  final Session session = Session();
+  final Session _session = Session();
   final HomeController _homeController = Get.put(HomeController());
   final CategoryController _categoryController = Get.put(CategoryController());
   TextEditingController description = TextEditingController();
@@ -25,7 +26,7 @@ class DebitController extends GetxController {
   }
 
   void getCategories() async {
-    var userInfo = await session.getUserInfo();
+    var userInfo = await _session.getUserInfo();
     List<Category> categories = [];
     http.get("${Config.api}/users/${userInfo['id']}/categories").then((res) {
       if (res.statusCode == 200) {
@@ -53,26 +54,11 @@ class DebitController extends GetxController {
     return double.parse(this.value.text) + _homeController.totalDebits.value < _homeController.limit.value;
   }
 
-  void showSnack(BuildContext context, String title, String message) {
-    Get.snackbar(
-      title,
-      message,
-      duration: Duration(milliseconds: 2500),
-      messageText: Text(message),
-      isDismissible: true,
-      dismissDirection: SnackDismissDirection.HORIZONTAL,
-      boxShadows: [BoxShadow(offset: Offset(0, 2), blurRadius: 2.2, color: Colors.black.withOpacity(0.24))],
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      margin: EdgeInsets.symmetric(vertical: 28, horizontal: 20),
-      animationDuration: Duration(milliseconds: 150),
-    );
-  }
-
   Future<void> createDebit(BuildContext context) async {
     bool error = false;
     String title;
     String message;
-    var userInfo = await session.getUserInfo();
+    var userInfo = await _session.getUserInfo();
     if (description.text.isEmpty || value.text.isEmpty || selectedCategory.value == null) {
       error = true;
       title = "Erro";
@@ -98,10 +84,7 @@ class DebitController extends GetxController {
         _homeController.getDebits();
       });
     }
-
-    if (error) {
-      this.showSnack(context, title, message);
-    }
+    if (error) CustomSnack.showSnack(context, title, message);
     await Future.delayed(Duration(milliseconds: 2000), () {});
   }
 }

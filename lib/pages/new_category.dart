@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import '../controllers/category_controller.dart';
-import '../components/components.dart';
+import '../components/my_input.dart';
+import '../components/color_selector.dart';
+
 
 class NewCategory extends StatelessWidget {
   void colorModal(BuildContext context) {
@@ -89,10 +91,9 @@ class NewCategory extends StatelessWidget {
                             color: Colors.blue,
                             padding: EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
-                            onPressed: () {
-                              ctx.createCategory(context).then((res) {
-                                Navigator.pop(context);
-                              });
+                            onPressed: () async {
+                              await ctx.createCategory(context).then((res) {});
+                              Navigator.pop(context);
                             },
                             child: Text(
                               'CRIAR',

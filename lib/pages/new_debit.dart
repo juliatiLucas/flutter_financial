@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../components/components.dart';
+import '../components/my_input.dart';
 import '../controllers/debit_controller.dart';
 import '../models/category.dart';
 
