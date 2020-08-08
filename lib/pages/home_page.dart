@@ -38,7 +38,7 @@ class HomePage extends StatelessWidget {
                   currentIndex: ctx.screen.value,
                   onTap: (index) => ctx.setScreen(index),
                   items: [
-                    BottomNavigationBarItem(title: Text('Debitos'), icon: Icon(Icons.category)),
+                    BottomNavigationBarItem(title: Text('Debitos'), icon: Icon(Icons.account_balance_wallet)),
                     BottomNavigationBarItem(title: Text('Categorias'), icon: Icon(Icons.dashboard)),
                   ],
                 )),

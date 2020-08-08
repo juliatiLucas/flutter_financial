@@ -9,7 +9,6 @@ import '../components/debit_tile.dart';
 import '../utils/session.dart';
 import './signin.dart';
 
-
 class Debits extends StatelessWidget {
   final HomeController _homeController = Get.put(HomeController());
   final Session session = Session();
@@ -55,7 +54,11 @@ class Debits extends StatelessWidget {
                   width: MediaQuery.of(context).size.width * 0.7,
                   padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                   decoration: BoxDecoration(
-                      color: Theme.of(context).scaffoldBackgroundColor, borderRadius: BorderRadius.all(Radius.circular(10))),
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10),
+                      )),
                   child: Container(
                     height: 190,
                     child: SingleChildScrollView(

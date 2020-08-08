@@ -62,15 +62,19 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Theme.of(context).accentColor,
         body: Center(
             child: Container(
-      height: 100,
-      width: 100,
-      child: Column(children: [
-        Icon(Icons.category, size: 48),
-        SizedBox(height: 15),
-        LinearProgressIndicator(),
-      ]),
-    )));
+          height: 150,
+          width: 120,
+          child: Column(children: [
+            Image.asset('assets/piggybank_outline.png'),
+            SizedBox(height: 15),
+            LinearProgressIndicator(
+              backgroundColor: Colors.white.withOpacity(0.76),
+              valueColor: AlwaysStoppedAnimation(Color(0xff109c8b)),
+            ),
+          ]),
+        )));
   }
 }

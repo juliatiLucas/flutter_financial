@@ -97,7 +97,7 @@ class Categories extends StatelessWidget {
                                   })),
                         )
                       : Center(child: Text('Nenhuma categoria'))
-                  : Container(padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4), child: LinearProgressIndicator()),
+                  : Container(padding: EdgeInsets.symmetric(horizontal: 12, vertical: 25), child: LinearProgressIndicator()),
               Expanded(
                   flex: 6,
                   child: ctx.selectedCategory.value != null
